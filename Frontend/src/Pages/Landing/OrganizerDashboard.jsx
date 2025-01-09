@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSidebar } from '../../context/SidebarContext';
+import  jwt_decode from 'jwt-decode'; // Correct import for jwt-decode
+
+
 
 const OrganizerDashboard = () => {
   const { tab } = useParams();
@@ -37,6 +40,10 @@ const OrganizerDashboard = () => {
 
   const handleCreateEvent = async (event) => {
     event.preventDefault();
+
+    const token = localStorage.getItem("token");
+    const decodedToken = jwt_decode(token);
+    const orgid = decodedToken.user.id;
     const formData = new FormData(event.target);
     const eventData = {
       event_name: formData.get("event_name"),
@@ -49,7 +56,7 @@ const OrganizerDashboard = () => {
       category: formData.get("category"),
       tags: formData.get("tags").split(",").map(tag => tag.trim()),
       image: formData.get("image"),
-      org_ID: "67738fad103ca82546f5dab2",
+      org_ID: orgid,
       totalSlots: formData.get("totalSlots"),
       isPublic: formData.get("isPublic")==="on",
     };

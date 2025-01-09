@@ -5,10 +5,10 @@ import User from "../model/user.schema.js";
 export const createEvent = async (req, res) => {
   try {
 
-    const user = await User.findById(req.user.id);
-        if (!user || !user.isApproved) {
-            return res.status(403).json({ message: 'You need to be approved to create an event.' });
-        }
+    // const user = await User.findById(req.user.id);
+    //     if (!user || !user.isApproved) {
+    //         return res.status(403).json({ message: 'You need to be approved to create an event.' });
+    //     }
     const {
       event_name,
       description,

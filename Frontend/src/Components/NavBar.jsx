@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import eventA from "../assets/images/eventA.png";
 import { useTheme } from '../context/ThemeContext';
-import { jwtDecode } from "jwt-decode";
+import  jwtDecode  from "jwt-decode";
 import { 
-  Bell, User, LogOut, Settings, ChevronDown,
+  Bell, User, LogOut, Settings, 
   Sun, Moon, Plus, Menu, Home, Phone, Info,
   LayoutDashboard, Calendar, BarChart3, HelpCircle, List
 } from 'lucide-react';
@@ -119,7 +119,7 @@ const NavBar = () => {
             className="cursor-pointer"
           />
         </div>
-        <ul className="space-y-4 mt-8">
+        <ul className="mt-8 space-y-4">
           {tabs.map((tab) => (
             <li
               key={tab.label}
@@ -145,8 +145,8 @@ const NavBar = () => {
       {/* Main Header */}
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-16"}`}>
         <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} shadow-sm`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-4">
+          <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between py-4">
               <h1 className={`text-2xl font-semibold ${themeClasses.text}`}>
                 EventA Organizer Dashboard
               </h1>
@@ -159,9 +159,9 @@ const NavBar = () => {
                   }`}
                 >
                   {isDarkMode ? (
-                    <Sun className="h-5 w-5 text-gray-300" />
+                    <Sun className="w-5 h-5 text-gray-300" />
                   ) : (
-                    <Moon className="h-5 w-5 text-gray-600" />
+                    <Moon className="w-5 h-5 text-gray-600" />
                   )}
                 </button>
 
@@ -176,7 +176,7 @@ const NavBar = () => {
                     }`}
                   >
                     <Bell className={`w-6 h-6 ${themeClasses.text}`} />
-                    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-xs text-white bg-red-500 rounded-full">
                       3
                     </span>
                   </button>
@@ -208,10 +208,10 @@ const NavBar = () => {
                       setIsProfileOpen(!isProfileOpen);
                       setShowNotifications(false);
                     }}
-                    className="p-2 hover:bg-gray-100 rounded-full"
+                    className="p-2 rounded-full hover:bg-gray-100"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
-                      <span className="text-white text-sm font-medium">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600">
+                      <span className="text-sm font-medium text-white">
                         {user?.fullname?.split(' ').map(name => name[0]).join('') || 'U'}
                       </span>
                     </div>
@@ -234,7 +234,7 @@ const NavBar = () => {
                             isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                           } ${themeClasses.text}`}
                         >
-                          <User className="h-4 w-4" />
+                          <User className="w-4 h-4" />
                           <span>Profile</span>
                         </Link>
                         <Link 
@@ -243,7 +243,7 @@ const NavBar = () => {
                             isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                           } ${themeClasses.text}`}
                         >
-                          <Settings className="h-4 w-4" />
+                          <Settings className="w-4 h-4" />
                           <span>Settings</span>
                         </Link>
                         <button 
@@ -252,7 +252,7 @@ const NavBar = () => {
                             isDarkMode ? 'hover:bg-red-900/20' : 'hover:bg-red-50'
                           }`}
                         >
-                          <LogOut className="h-4 w-4" />
+                          <LogOut className="w-4 h-4" />
                           <span>Sign Out</span>
                         </button>
                       </div>
@@ -269,14 +269,14 @@ const NavBar = () => {
 
   const RegularNavBar = () => (
     <div className={themeClasses.nav}>
-      <div className="max-w-7xl mx-auto px-4 py-3">
+      <div className="px-4 py-3 mx-auto max-w-7xl">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center">
             <img src={eventA} alt="logo" className={`h-12 w-auto ${isDarkMode ? 'invert' : ''}`} />
           </Link>
 
           <div className="flex items-center gap-4">
-            <div className="hidden lg:flex items-center">
+            <div className="items-center hidden lg:flex">
               <ul className="flex items-center gap-6">
                 {getNavigationItems().map((item) => (
                   <li key={item.to}>
@@ -284,7 +284,7 @@ const NavBar = () => {
                       to={item.to} 
                       className={`flex items-center gap-2 ${themeClasses.textMuted} hover:text-blue-600`}
                     >
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className="w-4 h-4" />
                       {item.text}
                     </Link>
                   </li>
@@ -299,9 +299,9 @@ const NavBar = () => {
               }`}
             >
               {isDarkMode ? (
-                <Sun className="h-5 w-5 text-gray-300" />
+                <Sun className="w-5 h-5 text-gray-300" />
               ) : (
-                <Moon className="h-5 w-5 text-gray-600" />
+                <Moon className="w-5 h-5 text-gray-600" />
               )}
             </button>
 
@@ -319,7 +319,7 @@ const NavBar = () => {
                     onClick={() => navigate('/userdb')}
                     className={`flex items-center gap-2 px-6 py-2 rounded-full ${themeClasses.button}`}
                   >
-                    <LayoutDashboard className="h-4 w-4" />
+                    <LayoutDashboard className="w-4 h-4" />
                     <span>Dashboard</span>
                   </button>
                 )}
@@ -331,8 +331,8 @@ const NavBar = () => {
                       isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                     }`}
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
-                      <span className="text-white text-sm font-medium">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600">
+                      <span className="text-sm font-medium text-white">
                         {user?.fullname?.split(' ').map(name => name[0]).join('') || 'U'}
                       </span>
                     </div>
@@ -355,7 +355,7 @@ const NavBar = () => {
                          isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                        } ${themeClasses.text}`}
                      >
-                       <User className="h-4 w-4" />
+                       <User className="w-4 h-4" />
                        <span>Profile</span>
                      </Link>
                      <Link 
@@ -364,7 +364,7 @@ const NavBar = () => {
                          isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                        } ${themeClasses.text}`}
                      >
-                       <Settings className="h-4 w-4" />
+                       <Settings className="w-4 h-4" />
                        <span>Settings</span>
                      </Link>
                      <button 
@@ -373,7 +373,7 @@ const NavBar = () => {
                          isDarkMode ? 'hover:bg-red-900/20' : 'hover:bg-red-50'
                        }`}
                      >
-                       <LogOut className="h-4 w-4" />
+                       <LogOut className="w-4 h-4" />
                        <span>Sign Out</span>
                      </button>
                    </div>
@@ -386,7 +386,7 @@ const NavBar = () => {
          <div className="lg:hidden">
            <div className="dropdown dropdown-end">
              <button tabIndex={0} className={`btn btn-ghost ${themeClasses.textMuted}`}>
-               <Menu className="h-5 w-5" />
+               <Menu className="w-5 h-5" />
              </button>
              <ul tabIndex={0} className={`menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow rounded-box w-52 ${
                isDarkMode ? 'bg-gray-900' : 'bg-white'
@@ -394,7 +394,7 @@ const NavBar = () => {
                {getNavigationItems().map((item) => (
                  <li key={item.to}>
                    <Link to={item.to} className={themeClasses.textMuted}>
-                     <item.icon className="h-4 w-4" />
+                     <item.icon className="w-4 h-4" />
                      {item.text}
                    </Link>
                  </li>
