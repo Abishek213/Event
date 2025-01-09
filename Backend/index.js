@@ -11,6 +11,7 @@ import seedRolePermissions from './seeders/rolePermissionSeeder.js';
 import eventRoutes from './routes/Event.routes.js';
 import userRoute from './routes/user.route.js';
 import roleRoute from './routes/role.route.js';
+import adminRoutes from './routes/admin.routes.js';
 
 // Initialize express app
 const app = express();
@@ -81,6 +82,7 @@ connectDB();
 app.use('/api/v1/events', eventRoutes); // Versioned API path
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/roles', roleRoute);
+app.use('/api/v1/admin', adminRoutes);
 
 // Health check
 app.get('/', (req, res) => {
