@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Menu,  Bell, Calendar, Users, BarChart3,  Tag, CreditCard,  Search, Sun, Moon, Filter, Grid, LogOut, HelpCircle } from 'lucide-react';
+import { Menu, Bell, Calendar, Users, BarChart3, Tag, CreditCard, Search, Sun, Moon, Filter, Grid, LogOut, HelpCircle } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 // import api from "../utils/api";
 
@@ -7,23 +7,28 @@ const AdminDashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('Overview');
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const[pendingEvents, setPendingEvents] = useState();
-  const[error, setError] = useState();
+  const [pendingEvents, setPendingEvents] = useState();
+  const [error, setError] = useState();
+  const [events, setEvents] = useState([]);
 
 
-  useEffect(() =>{
-    fetch("/api/v1/events/?status=Pending")
-    .then((response)=>response.json())
-    .then((data)=>{
-      setPendingEvents(data);
-    })
-    .catch((err) =>{
-      console.log(err);
-      setError("Error fetching event");
-    });
+
+
+  useEffect(() => {
+    const fetchPendingEvents = async () => {
+      try {
+        const response = await fetch('/api/v1/events/?status=Pending');
+        if (!response.ok) throw new Error('Failed to fetch events');
+        const data = await response.json();
+        setPendingEvents(data);
+      } catch (err) {
+        console.error('Error fetching events:', err);
+        setError('Error fetching events');
+      }
+    };
+    fetchPendingEvents();
   }, []);
-
-  const handleApprove=async(eventID)=>{
+  const handleApprove = async (eventID) => {
     try {
       await fetch(`/api/v1/admin/approve-event/${eventID}`, {
         method: 'POST', // Or 'PUT' if appropriate
@@ -40,7 +45,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleReject=async(eventID)=>{
+  const handleReject = async (eventID) => {
     try {
       await fetch(`/api/v1/admin/approve-event/${eventID}`, {
         method: 'POST', // Or 'PUT' if appropriate
@@ -110,14 +115,14 @@ const AdminDashboard = () => {
             { icon: Users, label: 'Users', notifications: 3 },
             { icon: Tag, label: 'Categories', notifications: 0 },
             { icon: CreditCard, label: 'Payments', notifications: 5 },
-            
+
           ].map(({ icon: Icon, label, notifications }) => (
-            <div 
+            <div
               key={label}
               onClick={() => setActiveTab(label)}
               className={`flex items-center px-4 py-3 my-1 rounded-xl cursor-pointer transition-all duration-200
-                ${activeTab === label 
-                  ? 'bg-indigo-500 text-white' 
+                ${activeTab === label
+                  ? 'bg-indigo-500 text-white'
                   : 'hover:bg-gray-700/30'}`}
             >
               <Icon className="w-5 h-5" />
@@ -137,9 +142,9 @@ const AdminDashboard = () => {
               <HelpCircle className="w-5 h-5" />
               <span className="ml-3">Help Center</span>
             </button>
-            <button 
-            onClick={handleLogout}
-            className="flex items-center w-full px-4 py-3 text-red-400 transition-colors rounded-xl hover:bg-gray-700/30">
+            <button
+              onClick={handleLogout}
+              className="flex items-center w-full px-4 py-3 text-red-400 transition-colors rounded-xl hover:bg-gray-700/30">
               <LogOut className="w-5 h-5" />
               <span className="ml-3">Logout</span>
             </button>
@@ -152,7 +157,7 @@ const AdminDashboard = () => {
         {/* Header */}
         <header className={`${componentClass} border-b sticky top-0 z-20 transition-colors duration-300`}>
           <div className="flex items-center justify-between h-16 px-6">
-            <button 
+            <button
               onClick={() => setSidebarOpen(!isSidebarOpen)}
               className="p-2 transition-colors rounded-lg lg:hidden hover:bg-gray-700/30"
             >
@@ -162,24 +167,22 @@ const AdminDashboard = () => {
             <div className="flex-1 ml-4">
               <div className="relative max-w-md">
                 <Search className="absolute w-5 h-5 -translate-y-1/2 left-3 top-1/2 opacity-40" />
-                <input 
+                <input
                   type="text"
                   placeholder="Search everything..."
-                  className={`w-full pl-10 pr-4 py-2 rounded-xl border ${
-                    isDarkMode 
-                      ? 'bg-gray-700/30 border-gray-700 focus:border-indigo-500' 
+                  className={`w-full pl-10 pr-4 py-2 rounded-xl border ${isDarkMode
+                      ? 'bg-gray-700/30 border-gray-700 focus:border-indigo-500'
                       : 'bg-gray-100 border-gray-200 focus:border-indigo-500'
-                  } focus:outline-none transition-colors`}
+                    } focus:outline-none transition-colors`}
                 />
               </div>
             </div>
 
             <div className="flex items-center space-x-4">
-              <button 
+              <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className={`p-2 rounded-lg transition-colors ${
-                  isDarkMode ? 'bg-gray-700/30 hover:bg-gray-700/50' : 'bg-gray-100 hover:bg-gray-200'
-                }`}
+                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'bg-gray-700/30 hover:bg-gray-700/50' : 'bg-gray-100 hover:bg-gray-200'
+                  }`}
               >
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
@@ -208,7 +211,7 @@ const AdminDashboard = () => {
               { title: 'Total Revenue', value: '$87.5k', change: '+8.3%', icon: CreditCard, color: 'purple' },
               { title: 'New Categories', value: '29', change: '+2.5%', icon: Tag, color: 'blue' },
             ].map(({ title, value, change, icon: Icon, color }) => (
-              <div key={title} 
+              <div key={title}
                 className={`${componentClass} border rounded-xl p-6 transition-transform duration-300 hover:scale-105`}
               >
                 <div className="flex items-start justify-between">
@@ -235,9 +238,8 @@ const AdminDashboard = () => {
                   <h3 className="text-lg font-bold">Events Analytics</h3>
                   <p className="text-sm opacity-60">Monthly event and user growth</p>
                 </div>
-                <button className={`p-2 rounded-lg transition-colors ${
-                  isDarkMode ? 'bg-gray-700/30 hover:bg-gray-700/50' : 'bg-gray-100 hover:bg-gray-200'
-                }`}>
+                <button className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'bg-gray-700/30 hover:bg-gray-700/50' : 'bg-gray-100 hover:bg-gray-200'
+                  }`}>
                   <Filter className="w-4 h-4" />
                 </button>
               </div>
@@ -247,24 +249,24 @@ const AdminDashboard = () => {
                     <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                     <XAxis dataKey="name" stroke={isDarkMode ? '#94a3b8' : '#64748b'} />
                     <YAxis stroke={isDarkMode ? '#94a3b8' : '#64748b'} />
-                    <Tooltip 
-                      contentStyle={{ 
+                    <Tooltip
+                      contentStyle={{
                         backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
                         borderColor: isDarkMode ? '#334155' : '#e2e8f0'
                       }}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="events" 
-                      stroke="#6366f1" 
+                    <Line
+                      type="monotone"
+                      dataKey="events"
+                      stroke="#6366f1"
                       strokeWidth={2}
                       dot={{ fill: '#6366f1' }}
                       activeDot={{ r: 6 }}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="users" 
-                      stroke="#a855f7" 
+                    <Line
+                      type="monotone"
+                      dataKey="users"
+                      stroke="#a855f7"
                       strokeWidth={2}
                       dot={{ fill: '#a855f7' }}
                       activeDot={{ r: 6 }}
@@ -301,38 +303,39 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {[1, 2, 3].map((_, i) => (
+                    {events.map((eventDetails, i) => (
                       <tr key={i} className="border-b border-gray-700">
                         <td className="py-4">
                           <div>
-                            <p className="font-medium">{event.event_name}</p>
-                            <p className="text-sm opacity-60">{event.category}</p>
+                            <p className="font-medium">{eventDetails.event_name}</p>
+                            <p className="text-sm opacity-60">{eventDetails.category}</p>
                           </div>
                         </td>
                         <td className="py-4">
                           <div className="flex items-center">
                             <div className="flex items-center justify-center w-8 h-8 font-bold text-white rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500">
-                            {event.organizer ? event.organizer.name[0] : 'N/A'}
+                              {eventDetails.organizer ? eventDetails.organizer.name[0] : 'N/A'}
                             </div>
-                            <span className="ml-3">{event.organizer ? event.organizer.name : 'Unknown'}</span>
+                            <span className="ml-3">{eventDetails.organizer ? eventDetails.organizer.name : 'Unknown'}</span>
                           </div>
                         </td>
-                        <td className="py-4">{event.event_date}</td>
+                        <td className="py-4">{eventDetails.event_date}</td>
                         <td className="py-4">
                           <span className="px-3 py-1 text-sm text-yellow-500 rounded-full bg-yellow-500/10">
-                          {event.status}
+                            {eventDetails.status}
                           </span>
                         </td>
                         <td className="py-4">
                           <div className="flex gap-2">
-                            <button className="px-3 py-1 text-sm text-white transition-colors bg-indigo-500 rounded-lg hover:bg-indigo-600"
-                            
-                            onClick={() => handleApprove(event._id)}
+                            <button
+                              className="px-3 py-1 text-sm text-white transition-colors bg-indigo-500 rounded-lg hover:bg-indigo-600"
+                              onClick={() => handleApprove(eventDetails.id)}
                             >
                               Approve
                             </button>
-                            <button className="px-3 py-1 text-sm transition-colors rounded-lg bg-gray-700/30 hover:bg-gray-700/50"
-                            onClick={() => handleReject(event._id)}
+                            <button
+                              className="px-3 py-1 text-sm transition-colors rounded-lg bg-gray-700/30 hover:bg-gray-700/50"
+                              onClick={() => handleReject(eventDetails.id)}
                             >
                               Reject
                             </button>

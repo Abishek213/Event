@@ -39,7 +39,7 @@ export const createEvent = async (req, res) => {
       image,
       org_ID,
       totalSlots,
-      isPublic,
+      isPublic: isPublic !== undefined ? isPublic : false,
       status: status || 'Pending'
     });
 
@@ -60,33 +60,32 @@ export const createEvent = async (req, res) => {
 };
 
 // Get all events
+// Get all events
 export const getEvents = async (req, res) => {
   const { search, location, category, priceRange, date, status } = req.query;
 
   try {
     // Build query based on parameters
-    const query = {};
-    if(status){
-      query.status=status;
+    const query = { status: 'Approved', isPublic: true };
+ // Corrected isPublic typo
+
+    if (status) {
+      query.status = status;
     }
-    
+
     if (search) {
       query.$or = [
         { event_name: { $regex: search, $options: "i" }},
         { description: { $regex: search, $options: "i" }}
       ];
     }
-    
+
     if (location) {
       query.location = { $regex: location, $options: "i" };
     }
-    
+
     if (category) {
       query.category = category; // This should now be a valid ObjectId
-    }
-
-    if (status) {
-      query.status = status;
     }
 
     if (priceRange) {
@@ -103,6 +102,7 @@ export const getEvents = async (req, res) => {
       };
     }
 
+    // Querying events with isPublic set to true
     const events = await Event.find(query)
       .populate("org_ID", "username email")
       .populate("category", "categoryName")
@@ -111,9 +111,9 @@ export const getEvents = async (req, res) => {
     res.status(200).json(events);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ 
-      message: "Error fetching events", 
-      error: error.message 
+    res.status(500).json({
+      message: "Error fetching events",
+      error: error.message
     });
   }
 };
