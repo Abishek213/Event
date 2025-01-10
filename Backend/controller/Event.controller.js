@@ -40,7 +40,7 @@ export const createEvent = async (req, res) => {
       org_ID,
       totalSlots,
       isPublic,
-      status: status || 'upcoming'
+      status: status || 'Pending'
     });
 
     const savedEvent = await newEvent.save();
@@ -66,6 +66,9 @@ export const getEvents = async (req, res) => {
   try {
     // Build query based on parameters
     const query = {};
+    if(status){
+      query.status=status;
+    }
     
     if (search) {
       query.$or = [
