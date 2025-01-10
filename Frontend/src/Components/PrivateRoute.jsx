@@ -1,5 +1,8 @@
-import React from 'react';
+// import React from 'react';
 import { Navigate } from 'react-router-dom';
+
+import PropTypes from 'prop-types';
+
 
 const PrivateRoute = ({ element: Element, requiredRole }) => {
     const token = localStorage.getItem('token');
@@ -23,5 +26,11 @@ const PrivateRoute = ({ element: Element, requiredRole }) => {
 
     return <Element />;
 };
+
+PrivateRoute.propTypes = {
+    element: PropTypes.elementType.isRequired, // validate that 'element' is a React component
+    requiredRole: PropTypes.string.isRequired,  // validate that 'requiredRole' is a string
+  };
+  
 
 export default PrivateRoute;

@@ -1,11 +1,62 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu,  Bell, Calendar, Users, BarChart3,  Tag, CreditCard,  Search, Sun, Moon, Filter, Grid, LogOut, HelpCircle } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+// import api from "../utils/api";
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('Overview');
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const[pendingEvents, setPendingEvents] = useState();
+  const[error, setError] = useState();
+
+
+  useEffect(() =>{
+    fetch("/api/v1/events/?status=Pending")
+    .then((response)=>response.json())
+    .then((data)=>{
+      setPendingEvents(data);
+    })
+    .catch((err) =>{
+      console.log(err);
+      setError("Error fetching event");
+    });
+  }, []);
+
+  const handleApprove=async(eventID)=>{
+    try {
+      await fetch(`/api/v1/admin/approve-event/${eventID}`, {
+        method: 'POST', // Or 'PUT' if appropriate
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'approve' }), // Pass action in the request body
+      });
+      alert("Event approved successfully");
+      setPendingEvents(pendingEvents.filter(event => event._id !== eventID));
+    } catch (err) {
+      console.log(err);
+      alert("Error approving event");
+    }
+  };
+
+  const handleReject=async(eventID)=>{
+    try {
+      await fetch(`/api/v1/admin/approve-event/${eventID}`, {
+        method: 'POST', // Or 'PUT' if appropriate
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'reject' }), // Pass action in the request body
+      });
+      alert("Event rejected successfully");
+      setPendingEvents(pendingEvents.filter(event => event._id !== eventID));
+    } catch (err) {
+      console.log(err);
+      alert("Error rejecting event");
+    }
+  };
+  // const[Events, setEvents] = useState();
 
   const chartData = [
     { name: 'Jan', events: 40, users: 24 },
@@ -33,7 +84,7 @@ const AdminDashboard = () => {
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} z-30`}>
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <div className="flex items-center space-x-3">
-            <div className="h-8 w-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+            <div className="flex items-center justify-center w-8 h-8 bg-indigo-500 rounded-lg">
               <Grid className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold">eventA</span>
@@ -42,7 +93,7 @@ const AdminDashboard = () => {
 
         <div className="p-4">
           <div className="flex items-center p-3 bg-gray-700/30 rounded-xl">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
+            <div className="flex items-center justify-center w-10 h-10 font-bold text-white rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500">
               A
             </div>
             <div className="ml-3">
@@ -52,7 +103,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <nav className="mt-2 px-3">
+        <nav className="px-3 mt-2">
           {[
             { icon: BarChart3, label: 'Overview', notifications: 0 },
             { icon: Calendar, label: 'Events', notifications: 12 },
@@ -70,7 +121,7 @@ const AdminDashboard = () => {
                   : 'hover:bg-gray-700/30'}`}
             >
               <Icon className="w-5 h-5" />
-              <span className="ml-3 flex-1">{label}</span>
+              <span className="flex-1 ml-3">{label}</span>
               {notifications > 0 && (
                 <span className="bg-white/20 text-white px-2 py-0.5 rounded-full text-xs">
                   {notifications}
@@ -82,13 +133,13 @@ const AdminDashboard = () => {
 
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <div className="space-y-2">
-            <button className="flex items-center w-full px-4 py-3 rounded-xl hover:bg-gray-700/30 transition-colors">
+            <button className="flex items-center w-full px-4 py-3 transition-colors rounded-xl hover:bg-gray-700/30">
               <HelpCircle className="w-5 h-5" />
               <span className="ml-3">Help Center</span>
             </button>
             <button 
             onClick={handleLogout}
-            className="flex items-center w-full px-4 py-3 rounded-xl hover:bg-gray-700/30 transition-colors text-red-400">
+            className="flex items-center w-full px-4 py-3 text-red-400 transition-colors rounded-xl hover:bg-gray-700/30">
               <LogOut className="w-5 h-5" />
               <span className="ml-3">Logout</span>
             </button>
@@ -103,14 +154,14 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-between h-16 px-6">
             <button 
               onClick={() => setSidebarOpen(!isSidebarOpen)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-700/30 transition-colors"
+              className="p-2 transition-colors rounded-lg lg:hidden hover:bg-gray-700/30"
             >
               <Menu className="w-6 h-6" />
             </button>
 
             <div className="flex-1 ml-4">
               <div className="relative max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 opacity-40" />
+                <Search className="absolute w-5 h-5 -translate-y-1/2 left-3 top-1/2 opacity-40" />
                 <input 
                   type="text"
                   placeholder="Search everything..."
@@ -133,9 +184,9 @@ const AdminDashboard = () => {
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
 
-              <button className="relative p-2 rounded-lg hover:bg-gray-700/30 transition-colors">
+              <button className="relative p-2 transition-colors rounded-lg hover:bg-gray-700/30">
                 <Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-indigo-500 rounded-full"></span>
+                <span className="absolute w-2 h-2 bg-indigo-500 rounded-full top-1 right-1"></span>
               </button>
             </div>
           </div>
@@ -150,7 +201,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
             {[
               { title: 'Total Events', value: '2,543', change: '+12.5%', icon: Calendar, color: 'indigo' },
               { title: 'Active Users', value: '45.2k', change: '+5.1%', icon: Users, color: 'green' },
@@ -163,7 +214,7 @@ const AdminDashboard = () => {
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm opacity-60">{title}</p>
-                    <h3 className="text-2xl font-bold mt-1">{value}</h3>
+                    <h3 className="mt-1 text-2xl font-bold">{value}</h3>
                     <span className={`text-sm text-${color}-500 bg-${color}-500/10 px-2 py-0.5 rounded-full mt-2 inline-block`}>
                       {change}
                     </span>
@@ -237,6 +288,7 @@ const AdminDashboard = () => {
                 </button>
               </div>
 
+              {error && <div className="p-4 text-red-500">{error}</div>}
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -253,30 +305,35 @@ const AdminDashboard = () => {
                       <tr key={i} className="border-b border-gray-700">
                         <td className="py-4">
                           <div>
-                            <p className="font-medium">Tech Summit 2025</p>
-                            <p className="text-sm opacity-60">Technology</p>
+                            <p className="font-medium">{event.event_name}</p>
+                            <p className="text-sm opacity-60">{event.category}</p>
                           </div>
                         </td>
                         <td className="py-4">
                           <div className="flex items-center">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                              J
+                            <div className="flex items-center justify-center w-8 h-8 font-bold text-white rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500">
+                            {event.organizer ? event.organizer.name[0] : 'N/A'}
                             </div>
-                            <span className="ml-3">John Doe</span>
+                            <span className="ml-3">{event.organizer ? event.organizer.name : 'Unknown'}</span>
                           </div>
                         </td>
-                        <td className="py-4">Mar 15, 2025</td>
+                        <td className="py-4">{event.event_date}</td>
                         <td className="py-4">
-                          <span className="px-3 py-1 rounded-full text-sm bg-yellow-500/10 text-yellow-500">
-                            Pending
+                          <span className="px-3 py-1 text-sm text-yellow-500 rounded-full bg-yellow-500/10">
+                          {event.status}
                           </span>
                         </td>
                         <td className="py-4">
                           <div className="flex gap-2">
-                            <button className="px-3 py-1 rounded-lg text-sm bg-indigo-500 hover:bg-indigo-600 text-white transition-colors">
+                            <button className="px-3 py-1 text-sm text-white transition-colors bg-indigo-500 rounded-lg hover:bg-indigo-600"
+                            
+                            onClick={() => handleApprove(event._id)}
+                            >
                               Approve
                             </button>
-                            <button className="px-3 py-1 rounded-lg text-sm bg-gray-700/30 hover:bg-gray-700/50 transition-colors">
+                            <button className="px-3 py-1 text-sm transition-colors rounded-lg bg-gray-700/30 hover:bg-gray-700/50"
+                            onClick={() => handleReject(event._id)}
+                            >
                               Reject
                             </button>
                           </div>
